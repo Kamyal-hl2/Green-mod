@@ -1,24 +1,18 @@
-// Green Engine v2 — Gradle scaffold for the Android launcher.
+// =============================================================================
+// Файл: build.gradle
+// Назначение: Конфигурация сборки APK лаунчера Green Engine v2
 //
-// Why this exists: the project's original scripts/build-java.sh calls
-// aapt/dx/apkbuilder from a hardcoded personal path
-// (/mnt/data/xash3d-android/...) that does not correspond to any public,
-// clonable repository — verified, there is no "xash3d-android" repo with
-// these binaries vendored. That build path is dead for anyone but the
-// original author. This build.gradle targets the SAME existing src/,
-// res/, assets/, AndroidManifest.xml (no files moved) but through the
-// Android Gradle Plugin, which GitHub Actions runners support natively.
+// Поддерживает:
+//   - armeabi-v7a (32-bit ARM) — для Android 4.2+ (API 17+)
+//   - arm64-v8a (64-bit ARM) — для Android 5.0+ (API 21+)
 //
-// AGP is pinned to the 7.4.x line, not 8.x — real tension, not a
-// non-issue: AGP 8.0 raised the minimum supported minSdkVersion to 21,
-// which would silently break this project's minSdkVersion=17 target
-// (older/weaker devices — the whole point of this port). AGP 7.4 in turn
-// was released alongside compileSdk 33, one cycle behind the
-// compileSdk/targetSdk 34 below — in practice this usually still builds
-// fine (the check is a soft warning, not a hard block, as of AGP 7.4), but
-// if a future AGP patch release turns that into a hard error, the real
-// fix is dropping minSdkVersion (to unlock AGP 8.x), not just bumping the
-// AGP pin — don't do the latter without deciding on the former first.
+// Универсальный APK содержит оба ABI. Android сам выбирает нужный.
+//
+// Сборка:
+//   ./gradlew assembleDebug   — отладочная сборка
+//   ./gradlew assembleRelease — релизная сборка (нужен keystore)
+// =============================================================================
+
 apply plugin: 'com.android.application'
 
 android {
@@ -27,8 +21,15 @@ android {
 
     defaultConfig {
         applicationId "com.valvesoftware.source"
-        minSdkVersion 17
-        targetSdkVersion 34
+        minSdkVersion 17       // Android 4.2 Jelly Bean — минимальная версия
+        targetSdkVersion 34    // Android 14 — целевая версия
+
+        // Поддерживаемые архитектуры:
+        // armeabi-v7a — 32-bit ARM (большинство старых/дешёвых телефонов)
+        // arm64-v8a   — 64-bit ARM (все современные телефоны с 2016 года)
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     sourceSets {
@@ -37,9 +38,8 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
-            // Matches the old build-java.sh convention (`apkbuilder ... -nf
-            // libs/`) — CI drops the waf-built .so files straight into
-            // libs/<abi>/ without any restructuring.
+            // .so-файлы кладутся в libs/<abi>/ (архитектура-специфичные)
+            // Gradle автоматически определяет ABI из подпапок
             jniLibs.srcDirs = ['libs']
         }
     }
@@ -53,11 +53,17 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            // Debug-сборка: включаем debuggable для отладки
+            debuggable true
+        }
+        release {
+            // Release-сборка: минификация не нужна для нативного движка
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt')
         }
     }
 
-    // The project ships its own compiled native libs (from the waf build,
-    // a separate CI job) — do not let AGP try to strip/repackage them.
+    // Не позволяет AGP изменять наши .so-файлы
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -66,5 +72,18 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    // Показываем какие ABI включены в APK
+    applicationVariants.configureEach { variant ->
+        variant.doLast {
+            def abiList = []
+            variant.outputs.each { output ->
+                def metadata = output.getMetadata()
+                if (metadata != null) {
+                    abiList.add(metadata.getABI())
+                }
+            }
+        }
     }
 }

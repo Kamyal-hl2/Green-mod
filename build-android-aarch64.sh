@@ -1,19 +1,19 @@
 #!/bin/bash
 # =============================================================================
-# Файл: build-android-armv7a.sh
-# Назначение: Сборка нативного движка Source Engine для Android ARMv7a (32-bit)
+# Файл: build-android-aarch64.sh
+# Назначение: Сборка нативного движка Source Engine для Android ARM64 (64-bit)
 #
-# Этот скрипт собирает C++ код движка в .so-библиотеки для armeabi-v7a.
-# Результатом являются .so-файлы в source-engine/build/ для 32-bit архитектуры.
+# Этот скрипт собирает C++ код движка в .so-библиотеки для arm64-v8a.
+# Результатом являются .so-файлы в source-engine/build/ для архитектуры arm64.
 #
 # Использование:
-#   chmod +x build-android-armv7a.sh
-#   ./build-android-armv7a.sh
+#   chmod +x build-android-aarch64.sh
+#   ./build-android-aarch64.sh
 #
 # Предварительные требования:
-#   build-env/env.sh (запустите setup-build-env.sh)
+#   source/build-env/env.sh (запустите setup-build-env.sh)
 #
-# Результат: .so-файлы в source-engine/build/ для armeabi-v7a
+# Результат: .so-файлы в source-engine/build/ для arm64-v8a
 # =============================================================================
 set -euo pipefail
 
@@ -21,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/source-engine"
 
 echo "============================================="
-echo "  Сборка Source Engine для Android ARMv7a"
+echo "  Сборка Source Engine для Android ARM64"
 echo "============================================="
 
 # Проверяем что build-env установлен
@@ -45,11 +45,12 @@ if [ ! -d "$ANDROID_NDK_HOME" ]; then
     exit 1
 fi
 
-# Конфигурация для ARMv7a (32-bit)
-# --android=armeabi-v7a,clang,21 — ARMv7a с Clang-компилятором, API 21
-echo "[2/4] Конфигурация для ARMv7a (32-bit)..."
+# Конфигурация для ARM64 (aarch64)
+# --android=aarch64,clang,21 — ARM64 с Clang-компилятором, API 21
+# Clang используется вместо GCC因为在 NDK r21+ GCC deprecated
+echo "[2/4] Конфигурация для ARM64 (aarch64)..."
 ./waf configure -T release \
-    --android=armeabi-v7a,clang,21 \
+    --android=aarch64,clang,21 \
     --togles \
     --disable-warns \
     --build-games=garrysmod 2>&1
