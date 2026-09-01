@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--
+  Файл: AndroidManifest.xml
+  Назначение: Конфигурация Android-приложения (главный лаунчер srceng-android)
+
+  Этот манифест определяет:
+    - Пакет приложения (com.valvesoftware.source)
+    - Минимальную/целевую версию Android
+    - Все необходимые разрешения (permissions)
+    - Активити (LauncherActivity, DirchActivity, SDLActivity)
+    - Сервис (UpdateService) для уведомлений об обновлениях
+
+  ВАЖНО:
+    - android:debuggable="true" УДАЛЁН из соображений безопасности
+    - FOREGROUND_SERVICE добавлен для Android 9+ (обязателен для сервисов)
+    - MANAGE_EXTERNAL_STORAGE для доступа к файлам на Android 11+
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:installLocation="auto" android:versionCode="1" android:versionName="1.12" package="com.valvesoftware.source">
+    <!-- Интернет: для скачивания обновлений и подключения к серверам -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Wake Lock: предотвращает засыпание устройства при загрузке контента -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- Доступ к сети: для проверки подключения перед скачиванием -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- Запись/чтение внешнего хранилища (legacy) — maxSdkVersion=29 чтобы
+         не запрашивать на Android 11+ (где эти разрешения бесполезны) -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
+    <!-- MANAGE_EXTERNAL_STORAGE: полный доступ к файлам на Android 11+ (API 30+).
+         Без этого движок не сможет найти контент GMod (Lua-скрипты, аддоны).
+         tools:ignore="ScopedStorage" — подавляем предупреждение линтера. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+    <!-- Запись звука: нужна для голосового чата в GMod -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- Foreground Service: обязателен для Android 9+ (API 28+) если сервис
+         работает в фоне. Без этого крашится на Android 9+. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <!-- Аппаратные особенности: -->
+    <uses-feature android:name="android.hardware.screen.landscape" android:required="true"/> <!-- только альбомная ориентация -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/> <!-- тачскрин не обязателен (Gamepad!) -->
+    <uses-feature android:name="android.software.leanback" android:required="false" /> <!-- Android TV не обязателен -->
+    <uses-feature android:glEsVersion="0x00020000"/> <!-- OpenGL ES 2.0 обязателен -->
+
+    <!-- Версии SDK: min=17 (Android 4.2), target=34 (Android 14) -->
+    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="34" />
+
+    <application android:icon="@drawable/ic_launcher" android:label="@string/srceng_app_name" android:allowAudioPlaybackCapture="true" android:requestLegacyExternalStorage="true">
+        <!-- Главная Activity: выбор директории игры и запуск -->
+        <activity android:label="@string/srceng_app_name" android:name="me.nillerusr.LauncherActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <!-- DirchActivity: выбор папки с игрой через файловый браузер -->
+        <activity android:label="Directory" android:name="me.nillerusr.DirchActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.DIRCH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <!-- SDLActivity: основная Activity с игрой (SDL2 + OpenGL рендеринг) -->
+          <activity android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation" android:label="@string/srceng_app_name" android:name="org.libsdl.app.SDLActivity" android:screenOrientation="sensorLandscape" android:launchMode="singleTask" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="org.libsdl.app.SDLACTIVITY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <!-- UpdateService: фоновый сервис для показа уведомлений об обновлениях.
+             stopWithTask="false" — продолжает работать даже после сворачивания.
+             exported="false" — другие приложения не могут его запустить. -->
+        <service android:name="me.nillerusr.UpdateService" android:stopWithTask="false" android:exported="false" />
+        <!-- Максимальное соотношение сторон экрана (для складных телефонов) -->
+        <meta-data android:name="android.max_aspect" android:value="9999.0" />
+        <!-- Разрешаем несколько активных Activity (для split-screen) -->
+        <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true" />
+    </application>
+</manifest>

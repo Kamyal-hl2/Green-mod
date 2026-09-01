@@ -1,0 +1,70 @@
+// Green Engine v2 — Gradle scaffold for the Android launcher.
+//
+// Why this exists: the project's original scripts/build-java.sh calls
+// aapt/dx/apkbuilder from a hardcoded personal path
+// (/mnt/data/xash3d-android/...) that does not correspond to any public,
+// clonable repository — verified, there is no "xash3d-android" repo with
+// these binaries vendored. That build path is dead for anyone but the
+// original author. This build.gradle targets the SAME existing src/,
+// res/, assets/, AndroidManifest.xml (no files moved) but through the
+// Android Gradle Plugin, which GitHub Actions runners support natively.
+//
+// AGP is pinned to the 7.4.x line, not 8.x — real tension, not a
+// non-issue: AGP 8.0 raised the minimum supported minSdkVersion to 21,
+// which would silently break this project's minSdkVersion=17 target
+// (older/weaker devices — the whole point of this port). AGP 7.4 in turn
+// was released alongside compileSdk 33, one cycle behind the
+// compileSdk/targetSdk 34 below — in practice this usually still builds
+// fine (the check is a soft warning, not a hard block, as of AGP 7.4), but
+// if a future AGP patch release turns that into a hard error, the real
+// fix is dropping minSdkVersion (to unlock AGP 8.x), not just bumping the
+// AGP pin — don't do the latter without deciding on the former first.
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.valvesoftware.source'
+    compileSdkVersion 34
+
+    defaultConfig {
+        applicationId "com.valvesoftware.source"
+        minSdkVersion 17
+        targetSdkVersion 34
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            // Matches the old build-java.sh convention (`apkbuilder ... -nf
+            // libs/`) — CI drops the waf-built .so files straight into
+            // libs/<abi>/ without any restructuring.
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    // The project ships its own compiled native libs (from the waf build,
+    // a separate CI job) — do not let AGP try to strip/repackage them.
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}

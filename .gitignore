@@ -1,0 +1,49 @@
+# === Compiled binaries ===
+*.o
+*.obj
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+*.a
+*.lib
+*.exp
+*.pdb
+
+# === Build artifacts ===
+build/
+_build/
+*.pyc
+__pycache__/
+.cache/
+.waf3-*/
+
+# === IDE files ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.cproject
+.settings/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === NDK (downloaded during build) ===
+android-ndk-*/
+
+# === Android build artifacts ===
+*.apk
+*.ap_
+gen/
+obj/
+local.properties
+
+# === Gradle ===
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
