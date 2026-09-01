@@ -249,6 +249,8 @@ class Android:
 					'--sysroot=%s/sysroot' % (self.gen_gcc_toolchain_path()),
 					'-isystem', '%s/usr/include/' % (self.sysroot())
 				]
+			else:
+				cflags += ['--sysroot=%s' % (self.sysroot())]
 
 		cflags += ['-I%s'%i for i in self.system_stl()]+['-DANDROID', '-D__ANDROID__']
 
