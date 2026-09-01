@@ -312,6 +312,7 @@ class Android:
 
 		if self.is_clang() or self.is_host():
 			ldflags += ['-stdlib=libstdc++']
+
 		if self.is_arm():
 			if self.arch == 'armeabi-v7a':
 				ldflags += ['-march=armv7-a']
