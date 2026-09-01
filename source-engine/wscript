@@ -185,9 +185,9 @@ def define_platform(conf):
 	if conf.env.DEST_OS == 'android':
 		# Android cross-compilation: sizeof(void*) depends on arch, skip check
 		if conf.env.DEST_CPU == 'aarch64':
-			conf.env.ARCH64 = True
+			arch64 = True
 		else:
-			conf.env.ARCH64 = False
+			arch64 = False
 	else:
 		arch32 = conf.run_test(CPP_32BIT_CHECK, 'Testing 32bit support')
 		arch64 = conf.run_test(CPP_64BIT_CHECK, 'Testing 64bit support')
