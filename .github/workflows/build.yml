@@ -26,13 +26,13 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Install Android NDK r21e
+    - name: Install Android NDK r20
       run: |
         cd /tmp
-        wget -q https://dl.google.com/android/repository/android-ndk-r21e-linux-x86_64.zip
-        unzip -q android-ndk-r21e-linux-x86_64.zip
-        echo "ANDROID_NDK_HOME=/tmp/android-ndk-r21e" >> $GITHUB_ENV
-        echo "NDK_HOME=/tmp/android-ndk-r21e" >> $GITHUB_ENV
+        wget -q https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
+        unzip -q android-ndk-r20-linux-x86_64.zip
+        echo "ANDROID_NDK_HOME=/tmp/android-ndk-r20" >> $GITHUB_ENV
+        echo "NDK_HOME=/tmp/android-ndk-r20" >> $GITHUB_ENV
 
     - name: Install Android Build-Tools
       run: |
@@ -43,7 +43,6 @@ jobs:
         cd source-engine
         git submodule init && git submodule update
         chmod +x waf
-        ls -la waf
 
     - name: Build native engine (armeabi-v7a / 32-bit)
       run: |

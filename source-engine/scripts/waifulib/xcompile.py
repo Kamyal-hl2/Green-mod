@@ -20,12 +20,12 @@ import os
 import sys
 
 ANDROID_NDK_ENVVARS = ['ANDROID_NDK_HOME', 'ANDROID_NDK']
-ANDROID_NDK_SUPPORTED = [10, 19, 20, 21]
+ANDROID_NDK_SUPPORTED = [10, 19, 20]
 ANDROID_NDK_HARDFP_MAX = 11 # latest version that supports hardfp
 ANDROID_NDK_GCC_MAX = 17 # latest NDK that ships with GCC
 ANDROID_NDK_UNIFIED_SYSROOT_MIN = 15
 ANDROID_NDK_SYSROOT_FLAG_MAX = 19 # latest NDK that need --sysroot flag
-ANDROID_NDK_API_MIN = { 10: 3, 19: 16, 20: 16, 21: 16 } # minimal API level ndk revision supports
+ANDROID_NDK_API_MIN = { 10: 3, 19: 16, 20: 16 } # minimal API level ndk revision supports
 ANDROID_64BIT_API_MIN = 21 # minimal API level that supports 64-bit targets
 
 # This class does support ONLY r10e and r19c/r20 NDK
@@ -194,8 +194,6 @@ class Android:
 		return os.path.join(self.gen_gcc_toolchain_path(), 'bin', triplet)
 
 	def gen_binutils_path(self):
-		if self.ndk_rev >= 21:
-			return os.path.join(self.gen_gcc_toolchain_path(), 'bin')
 		return os.path.join(self.gen_gcc_toolchain_path(), self.ndk_triplet(), 'bin')
 
 	def cc(self):
@@ -211,14 +209,10 @@ class Android:
 	def strip(self):
 		if self.is_host():
 			return 'llvm-strip'
-		if self.ndk_rev >= 21:
-			return os.path.join(self.gen_binutils_path(), 'llvm-strip')
 		return os.path.join(self.gen_binutils_path(), 'strip')
 
 	def system_stl(self):
 		# TODO: proper STL support
-		if self.ndk_rev >= 21:
-			return [os.path.abspath(os.path.join(self.ndk_home, 'toolchains', 'llvm', 'prebuilt', self.gen_host_toolchain(), 'sysroot', 'usr', 'include'))]
 		return [
 			#os.path.abspath(os.path.join(self.ndk_home, 'sources', 'cxx-stl', 'system', 'include')),
 			os.path.abspath(os.path.join(self.ndk_home, 'sources', 'android', 'support', 'include'))
