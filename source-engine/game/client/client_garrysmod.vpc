@@ -1,0 +1,54 @@
+//-----------------------------------------------------------------------------
+// Файл: CLIENT_GARRYSMOD.VPC
+// Назначение: Конфигурация сборки клиентской DLL для Garry's Mod
+//
+// Этот VPC-файл (Visual Project Configuration) определяет:
+//   - Имя проекта: "Client (GarrysMod)"
+//   - Include-пути: garrysmod, shared/garrysmod, lua_vm, luajit
+//   - Препроцессор: GARRYSMOD, GMOD_CLIENT_DLL
+//   - Исходники: lua_vm.cpp/.h (загрузчик Lua)
+//
+// Lua VM подключается к клиенту для будущих клиентских хуков
+// (пока MVP = сервер-only, но код компилируется и линкуется).
+//
+// ВАЖНО: Файл shared/garrysmod/ пока пуст — туда пойдут общие файлы
+//        клиента и сервера когда ents.* будет реализован.
+//-----------------------------------------------------------------------------
+
+// SRCDIR — корень исходников движка (../.. от этой папки)
+$Macro SRCDIR		"..\\.."
+// GAMENAME — имя мода (garrysmod для standalone, mod_garrysmod для SDK-режима)
+$Macro GAMENAME 	"garrysmod" [!$SOURCESDK]
+$Macro GAMENAME 	"mod_garrysmod" [$SOURCESDK]
+
+// Подключаем базовую конфигурацию клиентской DLL (общие настройки)
+$Include "$SRCDIR\\game\\client\\client_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		// Include-пути для компилятора:
+		// $BASE           — базовые пути из client_base.vpc
+		// .\\garrysmod    — локальная папка с клиентскими классами
+		// shared\\garrysmod — общие файлы клиента и сервера (пока пуста)
+		// lua_vm          — Lua VM bootstrap (lua_vm.cpp)
+		// luajit\\src     — заголовочные файлы LuaJIT (lua.h, lauxlib.h)
+		$AdditionalIncludeDirectories		"$BASE;.\\garrysmod,$SRCDIR\\game\\shared\\garrysmod,$SRCDIR\\game\\lua_vm,$SRCDIR\\thirdparty\\luajit\\src"
+		// Препроцессорные макросы:
+		// GARRYSMOD    — включает GMod-specific код в условиях #ifdef
+		// GMOD_CLIENT_DLL — отличает клиент от сервера
+		$PreprocessorDefinitions			"$BASE;GARRYSMOD;GMOD_CLIENT_DLL"
+	}
+}
+
+// Проект: Client (GarrysMod) — клиентская DLL (.dll/.so)
+$Project "Client (GarrysMod)"
+{
+	$Folder	"Source Files"
+	{
+		// Lua VM: загружает и выполняет Lua-скрипты на клиенте
+		$File	"$SRCDIR\\game\\lua_vm\\lua_vm.cpp"
+		$File	"$SRCDIR\\game\\lua_vm\\lua_vm.h"
+	}
+}
