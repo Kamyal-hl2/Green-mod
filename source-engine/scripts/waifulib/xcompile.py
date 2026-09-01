@@ -234,6 +234,8 @@ class Android:
 
 	def sysroot(self):
 		if self.ndk_rev >= ANDROID_NDK_UNIFIED_SYSROOT_MIN:
+			if self.is_clang():
+				return os.path.abspath(os.path.join(self.gen_gcc_toolchain_path(), 'sysroot'))
 			return os.path.abspath(os.path.join(self.ndk_home, 'sysroot'))
 		else:
 			return self.libsysroot()
