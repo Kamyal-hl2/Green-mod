@@ -161,7 +161,7 @@ echo "╔═══════════════════════�
 echo "║  [5/5] Готово!                        ║"
 echo "╚═══════════════════════════════════════╝"
 
-APK_PATH="build/outputs/apk/debug/srceng-android-debug.apk"
+APK_PATH="build/outputs/apk/debug/Green-mod-v2.apk"
 if [ -f "$APK_PATH" ]; then
     APK_SIZE=$(du -h "$APK_PATH" | cut -f1)
     echo ""

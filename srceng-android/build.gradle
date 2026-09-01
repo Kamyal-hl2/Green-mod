@@ -20,7 +20,7 @@ android {
     compileSdkVersion 34
 
     defaultConfig {
-        applicationId "com.valvesoftware.source"
+        applicationId "com.valvesoftware.source"  // Имя пакета (не имя APK)
         minSdkVersion 17       // Android 4.2 Jelly Bean — минимальная версия
         targetSdkVersion 34    // Android 14 — целевая версия
 
@@ -74,16 +74,10 @@ android {
         abortOnError false
     }
 
-    // Показываем какие ABI включены в APK
+    // Переименовываем выходной APK в Green-mod-v2.apk
     applicationVariants.configureEach { variant ->
-        variant.doLast {
-            def abiList = []
-            variant.outputs.each { output ->
-                def metadata = output.getMetadata()
-                if (metadata != null) {
-                    abiList.add(metadata.getABI())
-                }
-            }
+        variant.outputs.all { output ->
+            outputFileName = "Green-mod-v2.apk"
         }
     }
 }
