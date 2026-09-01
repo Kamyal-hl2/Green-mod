@@ -34,6 +34,19 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
+# === Large binary assets (re-download from Valve) ===
+*.vpk
+*.bsp
+*.wad
+*.mdl
+*.vtf
+*.vmt
+*.pcf
+*.txt
+!source-engine/game/client/wscript
+!source-engine/game/server/wscript
+!source-engine/wscript
+
 # === NDK (downloaded during build) ===
 android-ndk-*/
 
@@ -41,9 +54,13 @@ android-ndk-*/
 *.apk
 *.ap_
 gen/
+bin/
 obj/
 local.properties
 
 # === Gradle ===
 .gradle/
 gradle/wrapper/gradle-wrapper.jar
+
+# === Git ===
+.git/

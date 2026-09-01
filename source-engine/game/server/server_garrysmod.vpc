@@ -1,0 +1,36 @@
+//-----------------------------------------------------------------------------
+//	SERVER_GARRYSMOD.VPC
+//
+//	Project Script
+//	Minimal config: GMod's gameplay lives in Lua on top of the base game
+//	entities already built by server_base.vpc. No HL2-specific NPC/weapon
+//	C++ classes are pulled in here (unlike server_hl2mp.vpc) — the sandbox
+//	gamemode does not need them at the MVP stage.
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"garrysmod" [!$SOURCESDK]
+$Macro GAMENAME 	"mod_garrysmod" [$SOURCESDK]
+
+$Include "$SRCDIR\game\server\server_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;.\garrysmod,$SRCDIR\game\shared\garrysmod,$SRCDIR\game\lua_vm,$SRCDIR\thirdparty\luajit\src"
+		$PreprocessorDefinitions		"$BASE;GARRYSMOD;GMOD_DLL"
+	}
+}
+
+// game/lua_vm links into this project for entity access (CBaseEntity,
+// IServerGameDLL); no gamemode-specific .cpp files needed here yet — they'll
+// be added as Part 2 (hook.*, ents.*, ...) bindings land.
+$Project "Server (GarrysMod)"
+{
+	$Folder	"Source Files"
+	{
+		$File	"$SRCDIR\game\lua_vm\lua_vm.cpp"
+		$File	"$SRCDIR\game\lua_vm\lua_vm.h"
+	}
+}
