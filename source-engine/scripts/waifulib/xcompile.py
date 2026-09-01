@@ -358,6 +358,7 @@ def configure(conf):
 			libcxx_path = os.path.join(android.ndk_home, 'toolchains', 'llvm', 'prebuilt', android.gen_host_toolchain(), 'sysroot', 'usr', 'include')
 			conf.env.INCLUDES += [os.path.abspath(libcxx_path)]
 			conf.env.LDFLAGS += ['-lc++_static', '-lc++abi']
+			conf.env.STLIBS += ['iconv']
 		else:
 			conf.env.INCLUDES += [
 				os.path.abspath(os.path.join(android.ndk_home, 'sources', 'cxx-stl', 'gnu-libstdc++', '4.9', 'include')),
