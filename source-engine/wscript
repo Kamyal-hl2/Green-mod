@@ -609,15 +609,17 @@ def configure(conf):
 			conf.define('COMPILER_MSVC64', 1)
 
 	if conf.env.COMPILER_CC != 'msvc':
-		conf.check_cc(cflags=cflags, linkflags=linkflags, msg='Checking for required C flags', mandatory=(conf.env.DEST_OS != 'android'))
-		conf.check_cxx(cxxflags=cxxflags, linkflags=linkflags, msg='Checking for required C++ flags', mandatory=(conf.env.DEST_OS != 'android'))
+		if conf.env.DEST_OS != 'android':
+			conf.check_cc(cflags=cflags, linkflags=linkflags, msg='Checking for required C flags')
+			conf.check_cxx(cxxflags=cxxflags, linkflags=linkflags, msg='Checking for required C++ flags')
 
 		conf.env.append_unique('CFLAGS', cflags)
 		conf.env.append_unique('CXXFLAGS', cxxflags)
 		conf.env.append_unique('LINKFLAGS', linkflags)
 
-		cxxflags += conf.filter_cxxflags(compiler_optional_flags, cflags)
-		cflags += conf.filter_cflags(compiler_optional_flags + c_compiler_optional_flags, cflags)
+		if conf.env.DEST_OS != 'android':
+			cxxflags += conf.filter_cxxflags(compiler_optional_flags, cflags)
+			cflags += conf.filter_cflags(compiler_optional_flags + c_compiler_optional_flags, cflags)
 
 	conf.env.append_unique('CFLAGS', cflags)
 	conf.env.append_unique('CXXFLAGS', cxxflags)
