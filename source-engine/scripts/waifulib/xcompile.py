@@ -213,6 +213,10 @@ class Android:
 
 	def system_stl(self):
 		# TODO: proper STL support
+		if self.ndk_rev >= 19:
+			return [
+				os.path.abspath(os.path.join(self.ndk_home, 'toolchains', 'llvm', 'prebuilt', self.gen_host_toolchain(), 'sysroot', 'usr', 'include'))
+			]
 		return [
 			#os.path.abspath(os.path.join(self.ndk_home, 'sources', 'cxx-stl', 'system', 'include')),
 			os.path.abspath(os.path.join(self.ndk_home, 'sources', 'android', 'support', 'include'))
