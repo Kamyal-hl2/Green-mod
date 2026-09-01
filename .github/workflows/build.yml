@@ -14,11 +14,11 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        submodules: true  # Инициализация git-подмодулей (LuaJIT, SDL2)
+        submodules: true
         fetch-depth: 0
 
     - name: Setup JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: '17'
@@ -38,12 +38,18 @@ jobs:
       run: |
         yes | sdkmanager "build-tools;34.0.0" "platforms;android-34" "platform-tools" 2>/dev/null || true
 
-    - name: Build native engine (armeabi-v7a / 32-bit)
+    - name: Prepare waf
       run: |
         cd source-engine
         git submodule init && git submodule update
-        ./waf configure -T release --android=armeabi-v7a,clang,21 --togles --disable-warns --build-games=garrysmod
-        ./waf build -j$(nproc)
+        chmod +x waf
+        ls -la waf
+
+    - name: Build native engine (armeabi-v7a / 32-bit)
+      run: |
+        cd source-engine
+        python3 waf configure -T release --android=armeabi-v7a,clang,21 --togles --disable-warns --build-games=garrysmod
+        python3 waf build -j$(nproc)
 
     - name: Copy armeabi-v7a .so files
       run: |
@@ -55,13 +61,13 @@ jobs:
     - name: Clean build
       run: |
         cd source-engine
-        ./waf distclean 2>/dev/null || true
+        python3 waf distclean 2>/dev/null || true
 
     - name: Build native engine (arm64-v8a / 64-bit)
       run: |
         cd source-engine
-        ./waf configure -T release --android=aarch64,clang,21 --togles --disable-warns --build-games=garrysmod
-        ./waf build -j$(nproc)
+        python3 waf configure -T release --android=aarch64,clang,21 --togles --disable-warns --build-games=garrysmod
+        python3 waf build -j$(nproc)
 
     - name: Copy arm64-v8a .so files
       run: |
