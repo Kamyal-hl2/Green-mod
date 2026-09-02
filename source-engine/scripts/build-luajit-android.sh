@@ -37,10 +37,12 @@ case "$WAF_ARCH" in
 	arm)
 		CLANG_TRIPLET="armv7a-linux-androideabi"
 		LJARCH_FLAGS="-march=armv7-a"
+		HOST_CC_FLAG="-m32"
 		;;
 	aarch64)
 		CLANG_TRIPLET="aarch64-linux-android"
 		LJARCH_FLAGS=""
+		HOST_CC_FLAG=""
 		;;
 	*)
 		echo "unsupported arch: $WAF_ARCH (expected arm or aarch64)" >&2
@@ -65,7 +67,7 @@ echo "  AR=${NDK_TOOLCHAIN}/bin/llvm-ar"
 
 make -C "$LUAJIT_DIR" clean
 make -C "$LUAJIT_DIR" amalg \
-	HOST_CC="gcc -m32" \
+	HOST_CC="gcc ${HOST_CC_FLAG}" \
 	CC="${CLANG_CC}" \
 	TARGET_LD="${CLANG_CC}" \
 	TARGET_AR="${NDK_TOOLCHAIN}/bin/llvm-ar rcus" \

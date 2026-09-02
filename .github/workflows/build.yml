@@ -34,6 +34,9 @@ jobs:
         echo "ANDROID_NDK_HOME=/tmp/android-ndk-r21e" >> $GITHUB_ENV
         echo "NDK_HOME=/tmp/android-ndk-r21e" >> $GITHUB_ENV
 
+    - name: Install gcc-multilib for LuaJIT host build
+      run: sudo apt-get update && sudo apt-get install -y gcc-multilib
+
     - name: Prepare waf
       run: |
         cd source-engine
