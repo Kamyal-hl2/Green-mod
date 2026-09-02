@@ -375,6 +375,12 @@ def configure(conf):
 
 		conf.env.PREFIX += '/lib/%s' % android.apk_arch()
 
+		lib_android_path = os.path.abspath(os.path.join(conf.path.abspath(), 'lib', 'android', android.apk_arch()))
+		if os.path.isdir(lib_android_path):
+			conf.env.LIBPATH += [lib_android_path]
+			conf.env.STLIBPATH += [lib_android_path]
+			conf.msg('... prebuilt libs', lib_android_path)
+
 		conf.msg('Selected Android NDK', '%s, version: %d' % (android.ndk_home, android.ndk_rev))
 		# no need to print C/C++ compiler, as it would be printed by compiler_c/cxx
 		conf.msg('... C/C++ flags', ' '.join(android.cflags()).replace(android.ndk_home, '$NDK/'))
