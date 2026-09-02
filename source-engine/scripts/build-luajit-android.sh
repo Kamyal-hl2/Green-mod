@@ -65,7 +65,7 @@ echo "  AR=${NDK_TOOLCHAIN}/bin/llvm-ar"
 
 make -C "$LUAJIT_DIR" clean
 make -C "$LUAJIT_DIR" amalg \
-	HOST_CC="gcc" \
+	HOST_CC="gcc -m32" \
 	CC="${CLANG_CC}" \
 	TARGET_LD="${CLANG_CC}" \
 	TARGET_AR="${NDK_TOOLCHAIN}/bin/llvm-ar rcus" \
