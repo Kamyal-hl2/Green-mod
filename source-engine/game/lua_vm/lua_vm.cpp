@@ -122,13 +122,14 @@ static int Lua_IsValid( lua_State *L )
 //
 // Безопасность: lua_isstring() проверяет тип перед lua_tostring(),
 // чтобы не получить SIGSEGV если стек повреждён.
-static void LuaVM_PanicHandler( lua_State *L )
+static int LuaVM_PanicHandler( lua_State *L )
 {
 	// Lua's panic handler is called after an unrecoverable error.
 	// luaD_throw will call abort() after this returns, so we can only
 	// log a diagnostic. The process WILL terminate.
 	const char *msg = lua_isstring( L, -1 ) ? lua_tostring( L, -1 ) : NULL;
 	Warning( "[Lua] PANIC: %s\n", msg ? msg : "(unrecoverable error)" );
+	return 0;
 }
 
 // LuaVM_RegisterGlobals(L) — регистрирует глобальные функции в Lua-состоянии.
@@ -446,7 +447,7 @@ void LuaVM_RunHooks( const char *hookName )
 	// Передаём имя хука как аргумент: hook.Run("Think")
 	// lua_pushliteral() для строковых констант — не вычисляет длину через strlen(),
 	// использует sizeof("string")-1 на этапе компиляции.
-	lua_pushliteral( g_pLuaVM, hookName ); // [-0, +1]
+	lua_pushstring( g_pLuaVM, hookName ); // [-0, +1]
 
 	// lua_pcall(1 аргумент, 0 результатов, 0 обработчик ошибок)
 	// Возвращаем nresults=1 чтобы hook.Run() мог возвращать значение.
