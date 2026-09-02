@@ -40,6 +40,14 @@ jobs:
         git submodule init && git submodule update --recursive
         chmod +x waf
 
+    - name: Build LuaJIT for armeabi-v7a
+      run: |
+        cd source-engine
+        chmod +x scripts/build-luajit-android.sh
+        ANDROID_NDK_HOME=/tmp/android-ndk-r21e ./scripts/build-luajit-android.sh arm 21
+        echo "=== lib/android/arm/ ==="
+        ls -la lib/android/arm/libluajit.a
+
     - name: Build native engine (armeabi-v7a / 32-bit)
       run: |
         cd source-engine

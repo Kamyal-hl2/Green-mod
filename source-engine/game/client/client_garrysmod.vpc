@@ -7,12 +7,12 @@
 //   - Include-пути: garrysmod, shared/garrysmod, lua_vm, luajit
 //   - Препроцессор: GARRYSMOD, GMOD_CLIENT_DLL
 //   - Исходники: lua_vm.cpp/.h (загрузчик Lua)
+//   - HL2 engine infra (clientmode, prediction, input, gamemovement, VGUI panels)
 //
-// Lua VM подключается к клиенту для будущих клиентских хуков
-// (пока MVP = сервер-only, но код компилируется и линкуется).
-//
-// ВАЖНО: Файл shared/garrysmod/ пока пуст — туда пойдут общие файлы
-//        клиента и сервера когда ents.* будет реализован.
+// GMod is built on top of the HL2 engine, so it needs the HL2-specific
+// client infrastructure files (clientmode, prediction, input, gamerules,
+// usermessages, gamemovement, VGUI root panel). These are NOT gameplay
+// files — they are engine glue required for any Source mod to function.
 //-----------------------------------------------------------------------------
 
 // SRCDIR — корень исходников движка (../.. от этой папки)
@@ -32,9 +32,10 @@ $Configuration
 		// $BASE           — базовые пути из client_base.vpc
 		// .\\garrysmod    — локальная папка с клиентскими классами
 		// shared\\garrysmod — общие файлы клиента и сервера (пока пуста)
+		// .\\hl2          — HL2 engine infrastructure (clientmode, prediction, input)
 		// lua_vm          — Lua VM bootstrap (lua_vm.cpp)
 		// luajit\\src     — заголовочные файлы LuaJIT (lua.h, lauxlib.h)
-		$AdditionalIncludeDirectories		"$BASE;.\\garrysmod,$SRCDIR\\game\\shared\\garrysmod,$SRCDIR\\game\\lua_vm,$SRCDIR\\thirdparty\\luajit\\src"
+		$AdditionalIncludeDirectories		"$BASE;.\\garrysmod,$SRCDIR\\game\\shared\\garrysmod,.\\hl2,$SRCDIR\\game\\lua_vm,$SRCDIR\\thirdparty\\luajit\\src,$SRCDIR\\game\\shared\\hl2"
 		// Препроцессорные макросы:
 		// GARRYSMOD    — включает GMod-specific код в условиях #ifdef
 		// GMOD_CLIENT_DLL — отличает клиент от сервера
@@ -50,5 +51,28 @@ $Project "Client (GarrysMod)"
 		// Lua VM: загружает и выполняет Lua-скрипты на клиенте
 		$File	"$SRCDIR\\game\\lua_vm\\lua_vm.cpp"
 		$File	"$SRCDIR\\game\\lua_vm\\lua_vm.h"
+	}
+
+	$Folder	"HL2 Engine Infrastructure"
+	{
+		// Clientmode: g_pClientMode, default_fov, modemanager
+		$File	"hl2\\hl2_clientmode.cpp"
+		// ClientModeNormal: GetClientModeNormal()
+		$File	"hl2\\clientmode_hlnormal.cpp"
+		$File	"hl2\\clientmode_hlnormal.h"
+		// Prediction: prediction, g_pMoveData
+		$File	"hl2\\hl_prediction.cpp"
+		// Input: input
+		$File	"hl2\\hl_in_main.cpp"
+		// GameRules: GetAmmoDef()
+		$File	"$SRCDIR\\game\\shared\\hl2\\hl2_gamerules.cpp"
+		// UserMessages: RegisterUserMessages()
+		$File	"$SRCDIR\\game\\shared\\hl2\\hl2_usermessages.cpp"
+		// GameMovement: g_pGameMovement
+		$File	"$SRCDIR\\game\\shared\\hl2\\hl_gamemovement.cpp"
+		// VGUI Root Panel: VGUI_CreateClientDLLRootPanel, VGui_GetClientDLLRootPanel
+		$File	"hl2\\vgui_rootpanel_hl2.cpp"
+		// Shared defs
+		$File	"$SRCDIR\\game\\shared\\hl2\\hl2_shareddefs.h"
 	}
 }
