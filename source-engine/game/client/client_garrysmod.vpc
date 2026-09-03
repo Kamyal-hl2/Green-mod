@@ -72,6 +72,8 @@ $Project "Client (GarrysMod)"
 		$File	"$SRCDIR\\game\\shared\\hl2\\hl_gamemovement.cpp"
 		// VGUI Root Panel: VGUI_CreateClientDLLRootPanel, VGui_GetClientDLLRootPanel
 		$File	"hl2\\vgui_rootpanel_hl2.cpp"
+		// Credits: g_bRollingCredits (referenced by clientmode_hlnormal.cpp)
+		$File	"hl2\\hud_credits.cpp"
 		// Shared defs
 		$File	"$SRCDIR\\game\\shared\\hl2\\hl2_shareddefs.h"
 	}

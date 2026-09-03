@@ -356,6 +356,10 @@ def check_deps(conf):
 		conf.check(lib='opus', uselib_store='OPUS')
 		if conf.options.GAMES == 'garrysmod':
 			conf.check(lib='luajit', uselib_store='LUAJIT', define_name='HAVE_LUAJIT')
+			# libluajit.a is a static library — set STLIB so waf passes
+			# the full path to the linker instead of just -lluajit
+			if not conf.env.STLIB_LUAJIT:
+				conf.env.STLIB_LUAJIT = ['luajit']
 		return
 
 	if conf.env.DEST_OS != 'win32':

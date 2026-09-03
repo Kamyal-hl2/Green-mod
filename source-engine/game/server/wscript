@@ -64,7 +64,7 @@ def build(bld):
 	# outright link error on platforms where the LUAJIT uselib isn't
 	# checked, e.g. non-android — see wscript's configure()).
 	if bld.env.GAMES == 'garrysmod':
-		libs += ['luajit']
+		libs += ['LUAJIT']
 	if bld.env.DEST_OS == 'win32':
 		libs += ['USER32']
 
